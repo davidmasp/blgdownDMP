@@ -33,6 +33,4 @@ weight = 5
 
 # Biography
 
-Lena Smith is a professor of artificial intelligence at the Stanford AI Lab. Her research interests include distributed robotics, mobile computing and programmable matter. She leads the Robotic Neurobiology group, which develops self-reconfiguring robots, systems of self-organizing robots, and mobile sensor networks.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique placerat feugiat ac, facilisis vitae arcu. Proin eget egestas augue. Praesent ut sem nec arcu pellentesque aliquet. Duis dapibus diam vel metus tempus vulputate. 
+I am doing my Ph.D. in the Genome Data Science Lab ([AGENDAS](https://agendas.irbbarcelona.org/)) at the Institute for Research in Biomedicine. I am interested in cancer genomics, DNA mutagenesis and computational biology. During my Masters I discovered my passion for code and computer science and I am also particullary intereseted in data visualization and reproducible data science.
