@@ -1,0 +1,153 @@
+---
+title: "Tidy Tuesday - Week 8"
+author: "David Mas-Ponte"
+date: 2015-07-23T21:13:14-05:00
+categories: ["R"]
+tags: ["Tidy Tuesday", "plot"]
+---
+
+
+
+<pre class="r"><code>knitr::opts_chunk$set(collapse = TRUE)
+
+library(magrittr)
+library(ggplot2)</code></pre>
+<div id="honney-data" class="section level2">
+<h2>Honney Data</h2>
+<p>This time the amazing people at <a href="">R4DS</a> have provided us with a dataset of Honney production in the USA. Trying to fulfill my promise of reproducibility and “everything can be done in R” principle, I download directly the data within my R session. (see <a href="https://tolstoy.newcastle.edu.au/R/help/04/06/1672.html">order a pizza in R</a>)</p>
+<p><strong>Note</strong> that this approach will download the file everytime you execute your code. This may be not the most smart thing to do. For instance you may need to run this code offline or more likely a real-life dataset will be very big to re-download everytime.</p>
+<pre class="r"><code>url = &quot;https://github.com/rfordatascience/tidytuesday/raw/master/data/week8_honey_production.zip&quot;
+download.file(url,destfile = &quot;honney_files.zip&quot;)
+utils::unzip(&quot;honney_files.zip&quot;)
+dat = readr::read_csv(&quot;honeyproduction.csv&quot;)</code></pre>
+<p>First, let`s have a look to the data. This is important to me to know the column names and the type of data vizzs I am intereseted in. From this dataset, I think the evolution of Honney production in the US is pretty interesting to see.</p>
+<pre class="r"><code>dat %&gt;%  head %&gt;% knitr::kable(caption = &quot;Quick data view contained in the dataset.&quot;)</code></pre>
+<table>
+<caption><span id="tab:cars">Table 1: </span>Quick data view contained in the dataset.</caption>
+<thead>
+<tr class="header">
+<th align="left">state</th>
+<th align="right">numcol</th>
+<th align="right">yieldpercol</th>
+<th align="right">totalprod</th>
+<th align="right">stocks</th>
+<th align="right">priceperlb</th>
+<th align="right">prodvalue</th>
+<th align="right">year</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">AL</td>
+<td align="right">16000</td>
+<td align="right">71</td>
+<td align="right">1136000</td>
+<td align="right">159000</td>
+<td align="right">0.72</td>
+<td align="right">818000</td>
+<td align="right">1998</td>
+</tr>
+<tr class="even">
+<td align="left">AZ</td>
+<td align="right">55000</td>
+<td align="right">60</td>
+<td align="right">3300000</td>
+<td align="right">1485000</td>
+<td align="right">0.64</td>
+<td align="right">2112000</td>
+<td align="right">1998</td>
+</tr>
+<tr class="odd">
+<td align="left">AR</td>
+<td align="right">53000</td>
+<td align="right">65</td>
+<td align="right">3445000</td>
+<td align="right">1688000</td>
+<td align="right">0.59</td>
+<td align="right">2033000</td>
+<td align="right">1998</td>
+</tr>
+<tr class="even">
+<td align="left">CA</td>
+<td align="right">450000</td>
+<td align="right">83</td>
+<td align="right">37350000</td>
+<td align="right">12326000</td>
+<td align="right">0.62</td>
+<td align="right">23157000</td>
+<td align="right">1998</td>
+</tr>
+<tr class="odd">
+<td align="left">CO</td>
+<td align="right">27000</td>
+<td align="right">72</td>
+<td align="right">1944000</td>
+<td align="right">1594000</td>
+<td align="right">0.70</td>
+<td align="right">1361000</td>
+<td align="right">1998</td>
+</tr>
+<tr class="even">
+<td align="left">FL</td>
+<td align="right">230000</td>
+<td align="right">98</td>
+<td align="right">22540000</td>
+<td align="right">4508000</td>
+<td align="right">0.64</td>
+<td align="right">14426000</td>
+<td align="right">1998</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="plots" class="section level2">
+<h2>Plots</h2>
+<p>In this first example I check how the global production of Honney changes in the available years. We can see that globally the production of Honney has dropped to almost 75% of the original production in 15 years. We can also observe a huge heterogeneity in each state represented in this plot by a “box”.</p>
+<pre class="r"><code>p0 = dat %&gt;% ggplot(aes(x = year,y = totalprod)) +
+  geom_bar(stat=&quot;identity&quot;,fill=NA, color = &quot;black&quot;) +
+  cowplot::theme_cowplot() +
+  theme(axis.ticks = element_blank(),
+        axis.title.x = element_blank(),
+        axis.line.x = element_blank(),
+        axis.text.x = element_blank())
+p0</code></pre>
+<p><img src="/post/2018-05-24-TidyTuesday_8_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>Then, we can explore the production of each state evolution. However, to avoid a common overplotting problem we will focus our analysis in the TOP5 states producing Honney.</p>
+<pre class="r"><code>dat$label = dat$state
+states = dat[order(dat$totalprod,decreasing = T),]$state
+top5 = unique(states)[1:5]
+dat[!dat$label %in% top5,]$label = &quot;Rest&quot;
+p1 = dat %&gt;% ggplot(aes(x = year,y = totalprod, color =label)) +
+  geom_point(alpha = 0.1) +
+  geom_smooth(method = &quot;lm&quot;,se = FALSE)+ 
+  cowplot::theme_cowplot() +
+  theme(panel.grid.major.y = element_line(color = &quot;gray&quot;,
+                                          linetype = &quot;dashed&quot;),
+        axis.ticks = element_blank(),
+        legend.position = &quot;bottom&quot;) +
+  scale_y_sqrt(labels = scales::comma) +
+  scale_color_brewer(palette = &quot;Set2&quot;)
+
+p1</code></pre>
+<p><img src="/post/2018-05-24-TidyTuesday_8_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>From the plot we can see super clearly that meanwhile Florida, California and South Dakota are decreasing its production, North Dakota is now on top of the ranking.</p>
+<p>Another interesting data to explore is the evolution of the price of Honney. I would think honney should be more expensive now, but is there any interesting year to look into?</p>
+<pre class="r"><code>p2 = dat %&gt;% ggplot(aes(x = factor(year),y=priceperlb)) + 
+  geom_boxplot() +
+  cowplot::theme_cowplot() +
+  theme(axis.ticks = element_blank()) 
+
+p2</code></pre>
+<p><img src="/post/2018-05-24-TidyTuesday_8_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>We can easily see in the huge increase of price in 2002. Apparently, a low production of honney in the US combined with removing argentina producers out of the market <a href="https://www.nytimes.com/2002/03/05/business/us-and-argentina-fight-over-honey.html">source</a> could be the reason.</p>
+<p>Finally, we can generate a whole figure plot.</p>
+<pre class="r"><code>c1 = cowplot::plot_grid(p0,p1,ncol = 1,align = &quot;v&quot;)
+fp = cowplot::plot_grid(c1,p2 + coord_flip(),rel_widths = c(0.6,.4))
+fp</code></pre>
+<div class="figure"><span id="fig:pie"></span>
+<img src="/post/2018-05-24-TidyTuesday_8_files/figure-html/pie-1.png" alt="A fancy pie chart." width="1536" />
+<p class="caption">
+Figure 1: A fancy pie chart.
+</p>
+</div>
+</div>
