@@ -30,7 +30,7 @@ total = nrow(dat)
 ```
 
 
-```{r}
+```{r fig.width=15}
 p1 = dat %>% dplyr::select(birth.prv,rise,cause,killer,dynasty,era,century) %>%
   tidyr::gather("var","val",-cause) %>%
   dplyr::group_by(cause,var,val) %>%
@@ -93,7 +93,7 @@ col_pallete  = c('#a6cee3',
 ```
 
 
-```{r}
+```{r fig.width=16}
 p2 = ggplot(dat,aes(x = forcats::fct_reorder(name,.x = -index,.fun = mean),
                y=as.numeric(len),
                color = cause)) +
@@ -132,7 +132,7 @@ p2 = ggplot(dat,aes(x = forcats::fct_reorder(name,.x = -index,.fun = mean),
 ```
 
 
-```{r}
+```{r fig.width=20}
 fp = cowplot::plot_grid(p1,p2,rel_widths = c(1,1.5))
 print(fp)
 

@@ -80,7 +80,7 @@ total = nrow(dat)</code></pre>
         panel.grid = element_blank()) +
   theme(plot.background = element_rect(fill = &quot;gray20&quot;,color = NA))
 print(p1)</code></pre>
-<p><img src="/post/2018-08-02-roman-emperors-r-dataisbeautiful_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="/post/2018-08-02-roman-emperors-r-dataisbeautiful_files/figure-html/unnamed-chunk-2-1.png" width="1440" /></p>
 <pre class="r"><code># obtain the length
 dat$reign.start = as.numeric(dat$reign.start,&quot;days&quot;) 
 dat$reign.end = as.numeric(dat$reign.end,&quot;days&quot;)
@@ -131,7 +131,7 @@ dat[1,&quot;len&quot;] = (dat[1,]$reign.end - time0) + (dat[1,]$reign.start - ti
   theme(plot.background = element_rect(fill = &quot;gray20&quot;,color = NA))</code></pre>
 <pre class="r"><code>fp = cowplot::plot_grid(p1,p2,rel_widths = c(1,1.5))
 print(fp)</code></pre>
-<p><img src="/post/2018-08-02-roman-emperors-r-dataisbeautiful_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="/post/2018-08-02-roman-emperors-r-dataisbeautiful_files/figure-html/unnamed-chunk-6-1.png" width="1920" /></p>
 <pre class="r"><code># optionally, save plot
 ggsave(plot = fp,filename = &quot;plot.svg&quot;,device = &quot;svg&quot;,width = 10,height = 11)</code></pre>
 <p>After a few touches wih inkscape I ended up with this <a href="https://www.reddit.com/r/dataisbeautiful/comments/8ubnx1/roman_emperor_cause_of_death_oc/">reddit post</a>.</p>
