@@ -1,0 +1,49 @@
+---
+title: "Programing trends"
+author: "David Mas"
+date: "9 de agosto de 2018"
+output: html_document
+---
+
+
+
+<p>Inspired by this <a href="">tweet</a> I wanted to check the evolution of python compared to other very popular Languages in computer science. R is not so popular though…</p>
+<p>I chose, a bit based on my gut feeling 5 Languages.</p>
+<ul>
+<li>C++</li>
+<li>Java</li>
+<li>Javascript</li>
+<li>Perl</li>
+<li>Python</li>
+</ul>
+<p>I obtained the trend data from <a href="https://trends.google.com/trends/?geo=US">Google Trends</a> with this specific <a href="https://trends.google.com/trends/explore?date=all&amp;q=%2Fm%2F05z1_,%2Fm%2F05zrn,%2Fm%2F0jgqg,%2Fm%2F07sbkfb,%2Fm%2F02p97">query</a>.</p>
+<pre class="r"><code>library(magrittr)
+library(ggplot2)
+library(extrafont)
+
+loadfonts(device = &quot;win&quot;,quiet = TRUE)</code></pre>
+<p>After saving the data we import it into R and transform the Month column to Date format.</p>
+<pre class="r"><code>test = readr::read_csv(&quot;data/multiTimeline.csv&quot;,skip = 2)
+test$date = glue::glue(&quot;{test$Month}-01&quot;) %&gt;% lubridate::ymd()</code></pre>
+<p>Then we plot the relative proportion of google searches at every time point, you can see that Perl is decreasing rapigly and Python is catching java in the most popular language.</p>
+<pre class="r"><code>p0 = test %&gt;% 
+  tidyr::gather(key = &quot;Language&quot;,value = &quot;norm_popularity&quot;, -Month, -date) %&gt;%
+  ggplot(aes(x =date,y = norm_popularity, fill = Language)) + 
+  geom_bar(position = &quot;fill&quot;,stat = &quot;identity&quot;,width = 31) +
+  theme_minimal() + 
+  theme(panel.grid = element_blank(),
+        plot.background = element_rect(fill = &quot;gray20&quot;),
+        text = element_text(color = &quot;gray90&quot;,family = &quot;Montserrat SemiBold&quot;),
+        axis.text = element_text(color = &quot;gray90&quot;,family = &quot;Lato&quot;)) +
+  scale_fill_brewer(palette = &quot;Set3&quot;) + 
+  scale_y_continuous(labels = scales::percent) + 
+  labs(x = &quot;Year&quot;,y = &quot;Google search term popularity&quot;) 
+
+
+print(p0)</code></pre>
+<p><img src="/post/2018-08-05-programming_trends_files/figure-html/unnamed-chunk-3-1.png" width="1152" /></p>
+<p>Tricks used in this plot. (for sure there are better ways to…)</p>
+<ul>
+<li>See the <code>width=31</code> because the date format works with days and we have monthly timepoints, to make the with of the bar full I had to put the maximum number of days a month has. This is not ideal but it works.</li>
+</ul>
+<p>Finally I submited this to <code>r/dataisbeautiful</code> <a href="">here</a>.</p>
