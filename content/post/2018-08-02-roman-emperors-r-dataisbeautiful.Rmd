@@ -1,9 +1,17 @@
 ---
-title: "Roman Emperors - r/dataisbeautiful"
-author: "David Mas"
-date: "9 de agosto de 2018"
-output: html_document
+title: Roman Emperors - r/dataisbeautiful
+author: David Mas
+date: '2018-08-02'
+slug: roman-emperors-r-dataisbeautiful
+categories:
+  - R
+tags:
+  - dataisbeautiful
+header:
+  caption: ''
+  image: ''
 ---
+
 
 ```{r setup}
 library(magrittr)
