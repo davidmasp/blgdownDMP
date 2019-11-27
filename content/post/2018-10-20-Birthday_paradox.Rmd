@@ -1,0 +1,107 @@
+---
+title: "Birthday Paradox"
+author: "David Mas"
+date: "7 de octubre de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+```{r}
+
+
+library(ggplot2)
+library(magrittr)
+
+#' Birthday paradox probability
+#'
+#' This is the probability that 2 birthdays in a group of n people
+#' will not overlap.
+#'
+#' @param n number of trials
+#' @param t number of possible outcomes
+#'
+#' @return
+#' @export
+#'
+#' @examples
+birthday_paradox <- function(n,t=365){
+  (factorial(n) * choose(n = t,k = n) ) / t**n
+}
+
+
+simulate_room <- function(iterations,people,ndays = 365){
+  res = purrr::map_int(1:iterations,function(x){
+    max(table(sample(x = ndays,size = people,replace = TRUE)))
+  })
+
+  return(res)
+}
+
+
+# theory
+
+df <- data.frame(
+  x = 1:60
+)
+
+ndays = 365
+
+df$p = (1 - purrr::map_dbl(df$x,birthday_paradox, t = winlength))
+
+p1 = ggplot(df,
+       aes(x=x, y = p)) +
+  geom_line()  +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    x = "Total people in a room",
+    y = "Probability of co-occurence"
+  ) +
+  cowplot::theme_cowplot()
+
+
+# simulations
+
+dat = purrr::map_df(.x = df$x,.f = function(x){
+  tbl = table(simulate_room(iterations = 1000,
+                      people = x))
+
+  df = as.data.frame(tbl)
+  df$x = x
+  return(df)
+})
+
+p2 = dat %>% ggplot(aes(x = x,y = Freq,fill = Var1)) +
+  geom_bar(stat = "identity",width = 1) +
+  cowplot::theme_cowplot() +
+  theme(legend.position = "bottom")
+
+cowplot::plot_grid(p1,p2,ncol = 1)
+
+
+
+```
